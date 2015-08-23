@@ -91,54 +91,44 @@ class MyHandler(BaseHTTPRequestHandler):
 				self.send_header('Content-type', 'text/html')
 				self.end_headers()
 				self.wfile.write(page)
-                return
+				return
 
-            elif self.path.endswith(".html"):
-                ## print curdir + sep + self.path
-                f = open(curdir + sep + self.path)
-                #note that this potentially makes every file on your computer readable by the internet
-                self.send_response(200)
-                self.send_header('Content-type',    'text/html')
-                self.end_headers()
-                self.wfile.write(f.read())
-                f.close()
-                return
-                
-            elif self.path.endswith(".esp"):   #our dynamic content
-                self.send_response(200)
-                self.send_header('Content-type',    'text/html')
-                self.end_headers()
-                self.wfile.write("hey, today is the " + str(time.localtime()[7]))
-                self.wfile.write(" day in the year " + str(time.localtime()[0]))
-                return
+			elif self.path.endswith(".html"):
+				## print curdir + sep + self.path
+				f = open(curdir + sep + self.path)
+				#note that this potentially makes every file on your computer readable by the internet
+				self.send_response(200)
+				self.send_header('Content-type',    'text/html')
+				self.end_headers()
+				self.wfile.write(f.read())
+				f.close()
+				return
 
-            else :
-            	client_addr = self.client_address[0]
-                filepath = '../videos' + self.path
-                fileSz = os.path.getsize(filepath)
-                f = open( os.path.join(CWD, filepath), 'rb' )
-                #note that this potentially makes every file on your computer readable by the internet
-                self.send_response(200)
-                self.send_header('Content-type',    'application/octet-stream')
-                self.send_header('Content-Length', str(fileSz))
-                self.end_headers()
-                self.wfile.write(f.read())
-                f.close()
-                return
-            return # be sure not to fall into "except:" clause ?       
+			elif self.path.endswith(".esp"):   #our dynamic content
+				self.send_response(200)
+				self.send_header('Content-type',    'text/html')
+				self.end_headers()
+				self.wfile.write("hey, today is the " + str(time.localtime()[7]))
+				self.wfile.write(" day in the year " + str(time.localtime()[0]))
+				return
 
-        except IOError as e :  
-             # debug     
-             print e
-             self.send_error(404,'File Not Found: %s' % self.path)
+			else :
+				client_addr = self.client_address[0]
+				filepath = '../videos' + self.path
+				fileSz = os.path.getsize(filepath)
+				f = open( os.path.join(CWD, filepath), 'rb' )
+				self.send_response(200)
+				self.send_header('Content-type',    'application/octet-stream')
+				self.send_header('Content-Length', str(fileSz))
+				self.end_headers()
+				self.wfile.write(f.read())
+				f.close()
+				return    
 
-    def do_POST(self):
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write("<HTML><HEAD></HEAD><BODY>POST OK.<BR><BR>");
-            self.wfile.write( "File uploaded under name: " + os.path.split(fullname)[1] );
-            self.wfile.write(  '<BR><A HREF=%s>back</A>' % ( UPLOAD_PAGE, )  )
-            self.wfile.write("</BODY></HTML>");
+		except IOError as e :  
+			# debug     
+			print e
+			self.send_error(404,'File Not Found: %s' % self.path)
 
 #==========================================================================================
 # Main Function of Cache Agent
